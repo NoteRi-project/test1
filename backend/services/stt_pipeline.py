@@ -27,8 +27,9 @@ class STTPipeline:
     """
     실시간 STT 파이프라인
     - 1분 단위 구간 요약: [last_cut_ts, now) 범위의 확정문장 + 라이브 버퍼로 요약
-    - 비동기 요약: summarizer.generate를 별 스레드에서 실행하여 이벤트 루프 블로킹 방지
+    - 요약은 별 스레드에서 실행하여 이벤트 루프 블로킹 방지
     - 세션 종료 시 마지막 구간 강제 flush
+    - ✅ 교정기(corrector) 사용 없음 (SilenceSegmenter의 정리만 적용)
     """
     def __init__(self):
         # === 모델 초기화 ===
@@ -41,6 +42,7 @@ class STTPipeline:
         )
         self.vad = VADFilter(threshold=VAD_THRESHOLD, sampling_rate=VAD_SAMPLE_RATE)
         self.deduper = TimestampDeduplicator()
+        # SilenceSegmenter는 finalized 시에만 강하게 정리(cleaner.clean) 수행
         self.segmenter = SilenceSegmenter(silence_limit=1.5, chunk_seconds=1.0, ngram_size=2)
         self.summarizer = ThreeLineSummarizer(device="cuda")
 
@@ -52,7 +54,6 @@ class STTPipeline:
         self.last_cut_ts = None            # float | None
         self._tick_interval = 1.0          # 초
         self._min_chars_for_summary = 40   # 요약 최소 분량 (부족하면 다음 구간으로 합산)
-        # 참고: 너무 낮추면 빈약한 요약이 나올 수 있음. 필요시 60~120으로 조정.
 
         # ===== 텍스트/오디오 버퍼 =====
         # 확정 문장 히스토리: (확정시각 timestamp, text) 리스트
@@ -66,9 +67,6 @@ class STTPipeline:
 
     # ---------------------------------------------------------------------
     # 세션 수명주기 (선택적)
-    # main.py에서 await pipeline.begin_session(websocket) / await pipeline.end_session()
-    # 을 호출하면 오디오가 들어오기 전에도 타이머가 바로 시작된다.
-    # main을 수정하기 어렵다면 호출하지 않아도 되며, 첫 feed() 시 자동 초기화된다.
     # ---------------------------------------------------------------------
     async def begin_session(self, websocket):
         """WS 수락 직후 호출: 타이머 즉시 시작(오디오 유무 무관)."""
@@ -183,6 +181,7 @@ class STTPipeline:
         """
         오디오 data → VAD → STT → Dedup → Segment → WebSocket
         - 첫 호출 시 세션/타이머 자동 초기화(fallback)로 main 수정 없이도 동작.
+        - 확정 문장은 SilenceSegmenter의 clean 결과를 그대로 사용 (교정기 없음)
         """
         # 세션/타이머 자동 초기화 (main에서 begin_session을 안 불렀을 때를 대비)
         if not self.session_active or self.ws is None:
