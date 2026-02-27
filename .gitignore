@@ -56,3 +56,10 @@ backend/.env
 backend/.env.*
 frontend/.env
 frontend/.env.*
+
+# Security: ignore common private key / credential artifacts
+id_rsa
+id_ed25519
+*.pem
+*.key
+Start-Service ssh-agent*
