@@ -1,0 +1,9 @@
+{
+  "stage": "B",
+  "run_count": 6,
+  "todos": [
+    "(B) add minimal backend unit tests (smoke test + one route)",
+    "(C) tame ESLint: either fix easy unused-vars or scope rules",
+    "(D) identify top-1 bottleneck via profiling/logging"
+  ]
+}

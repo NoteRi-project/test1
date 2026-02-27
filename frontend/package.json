@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "tailwind:init": "tailwindcss init -p"
+    "tailwind:init": "tailwindcss init -p",
+    "security:check": "bash ../scripts/security/check_no_private_keys.sh"
   },
   "dependencies": {
     "@channel.io/channel-web-sdk-loader": "^2.0.2",
