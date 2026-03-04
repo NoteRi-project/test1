@@ -361,17 +361,19 @@ async def startup_event():
     logger.info("🎉 Application startup completed")
 
     # =============================================
-    # 🔥 서버 절대 꺼지지 않게 무한 태스크 추가
+    # 🧯 개발/실험용 keep-alive 태스크 (기본: 비활성)
     # =============================================
-    async def _keep_server_alive():
-        """이 태스크가 살아있으면 이벤트 루프 종료 안 됨 → 서버 안 꺼짐"""
-        while True:
-            logger.info("❤️ 서버 살아있음... (절대 안 꺼짐)")
-            await asyncio.sleep(30)  # 30초마다 로그 (부하 거의 없음)
+    # Docker/프로덕션에서는 프로세스 생명주기는 오케스트레이터가 관리해야 하므로
+    # "절대 안 꺼짐" 태스크는 기본적으로 비활성화한다.
+    if os.getenv("KEEP_ALIVE", "false").lower() in {"1", "true", "yes", "y"}:
+        async def _keep_server_alive():
+            """개발/실험용: 이벤트 루프가 조기 종료되는 환경에서만 사용"""
+            while True:
+                logger.info("keep-alive: server is alive")
+                await asyncio.sleep(30)
 
-    # 백그라운드에서 실행
-    asyncio.create_task(_keep_server_alive())
-    logger.info("🛡️ Keep-alive 태스크 시작됨 → 서버 영원히 유지")
+        asyncio.create_task(_keep_server_alive())
+        logger.info("🛡️ Keep-alive task enabled (KEEP_ALIVE=true)")
 
 
 @app.on_event("shutdown")
