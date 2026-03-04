@@ -22,6 +22,10 @@ RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 # Copy backend source
 COPY backend /app/backend
 
+# Container healthcheck (requires the app to be running)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:8000/health || exit 1
+
 EXPOSE 8000
 
 # Default command (does not run unless the container is started)

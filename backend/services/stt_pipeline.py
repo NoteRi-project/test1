@@ -8,7 +8,6 @@ import os
 import time
 import traceback
 import wave
-from datetime import datetime
 from typing import Optional, Tuple, Any, List, Dict
 
 # === 외부 라이브러리 ===
@@ -21,7 +20,6 @@ from backend.ml.vad import VADFilter
 from backend.ml.postprocess.silence_segmenter import SilenceSegmenter
 from backend.ml.postprocess.timestamp_deduplicator import TimestampDeduplicator
 from backend.ml.preprocessing.realtime_cleaner import RealtimeCleaner
-from backend.app.util.redis_publisher import publish_segment, publish_summary
 from backend.app.util.crypto_path import encrypt_path
 from backend.app.db import SessionLocal
 from backend.app import model
@@ -46,22 +44,11 @@ from backend.config import VAD_SAMPLE_RATE, VAD_THRESHOLD
 
 # === 서비스 ===
 from backend.services.diarization import run_diarization_for_session
+from backend.services.stt_keys import build_keys, date_prefix
 
 # === 환경변수 설정 ===
 from dotenv import load_dotenv
 load_dotenv()
-
-# === Key Builder (standardized Redis key patterns) ===
-def build_keys(prefix: str, sid: str) -> dict:
-    """
-    Generate consistent Redis key names for meta, segments, and summaries
-    following the convention: prefix:<suffix>:sid
-    """
-    return {
-        "meta":      f"{prefix}:meta:{sid}",
-        "segments":  f"{prefix}:{sid}:segments",
-        "summaries": f"{prefix}:{sid}:summaries",
-    }
 
 # === 설정 클래스 ===
 class PipelineConfig:
@@ -110,7 +97,7 @@ def _short_sid() -> str:
 
 def _date_prefix() -> str:
     """날짜 기반 네임스페이스 생성 (예: stt:2025-10-20)"""
-    return datetime.now().strftime("stt:%Y-%m-%d")
+    return date_prefix()
 
 
 # === 로깅 설정 ===
