@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useFadeInOnScroll from "../../hooks/useFadeInOnScroll";
+import apiClient from "../../api/apiClient";
 
 export default function PricingSection({user}) {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function PricingSection({user}) {
     const handlePayment = async () => {
         if (!selectedPlan) return;
         try {
-            const { data } = await apiClient.post(`${API_BASE_URL}/payments/request`, {
+            const { data } = await apiClient.post("/payments/request", {
                 plan_name: selectedPlan.name.toLowerCase(),
             });
             const toss = window.TossPayments?.(import.meta.env.VITE_TOSS_CLIENT_KEY);

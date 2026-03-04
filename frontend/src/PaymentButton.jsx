@@ -1,8 +1,6 @@
 import React from "react";
 
 function PaymentButton() {
-    const tossPayments = window.TossPayments(import.meta.env.VITE_TOSS_CLIENT_KEY);
-
   const handlePayment = async () => {
     const orderId = "order_" + Date.now();
     const amount = 10000; // 테스트 금액
