@@ -12,7 +12,7 @@ import { useToast } from "../../hooks/useToast";
 import apiClient from "../../api/apiClient";
 import { API_BASE_URL } from "../../config";
 import { Folder, Palette, Bell } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 
 export default function SideNav({ isOpen, onClose }) {
   const dispatch = useDispatch();
@@ -364,7 +364,7 @@ export default function SideNav({ isOpen, onClose }) {
         {isOpen && (
           <>
             {/* 배경 오버레이 */}
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -373,7 +373,7 @@ export default function SideNav({ isOpen, onClose }) {
             />
 
             {/* 슬라이드 사이드바 */}
-            <motion.aside
+            <Motion.aside
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
@@ -402,7 +402,7 @@ export default function SideNav({ isOpen, onClose }) {
               </div>
 
               <SideNavContent />
-            </motion.aside>
+            </Motion.aside>
           </>
         )}
       </AnimatePresence>

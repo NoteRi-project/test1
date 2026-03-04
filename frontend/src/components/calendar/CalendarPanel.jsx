@@ -24,7 +24,7 @@ export default function CalendarPanel() {
       const res = await apiClient.post("/rag/ask", { question: ragQuestion, top_k: 5 });
       setRagAnswer(res.data.answer);
       setRagSources(res.data.sources || []);
-    } catch (err) {
+    } catch {
       setRagError("답변 생성 중 오류가 발생했습니다.");
     } finally {
       setRagLoading(false);

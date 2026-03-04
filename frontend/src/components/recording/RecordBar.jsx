@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { FaPause, FaStop, FaPlay, FaShareAlt } from "react-icons/fa";
 import { BsRecordCircle } from "react-icons/bs";
 import { MdOutlineStickyNote2 } from "react-icons/md";
 
 import RecordShareModal from "./RecordShareModal";
-import TemplateBar from "./TemplateBar";
-import { generateTemplate } from "../../api/ollamaApi";
 
 export default function RecordBar({
   boardId = null,
@@ -22,11 +20,6 @@ export default function RecordBar({
   refinedScript = [],
   memo = null,
   onToggleMobileMemo,
-  // ⭐ 부모에서 전달받은 props (중복 선언 제거!)
-  showTemplateModal,
-  setShowTemplateModal,
-  templateContent,
-  setTemplateContent,
   barCenter,
   showShareModal,
   setShowShareModal,
@@ -98,7 +91,7 @@ export default function RecordBar({
       />
 
       {/* 🆕 기존 녹음 바 */}
-      <motion.div
+      <Motion.div
         key="record-bar"
         className="
           fixed lg:static 
@@ -114,7 +107,7 @@ export default function RecordBar({
         <div className="flex items-center gap-3 justify-center lg:bg-white/80 lg:backdrop-blur-sm lg:shadow-md lg:border lg:border-gray-200 rounded-full px-5 py-2 transition-all">
           <AnimatePresence mode="wait">
             {state === "idle" && (
-              <motion.div
+              <Motion.div
                 key="idle"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -154,11 +147,11 @@ export default function RecordBar({
                 >
                   <MdOutlineStickyNote2 className="text-xl" />
                 </button>
-              </motion.div>
+              </Motion.div>
             )}
 
             {state === "recording" && (
-              <motion.div
+              <Motion.div
                 key="recording"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -202,11 +195,11 @@ export default function RecordBar({
                 >
                   <MdOutlineStickyNote2 className="text-xl" />
                 </button>
-              </motion.div>
+              </Motion.div>
             )}
 
             {state === "paused" && (
-              <motion.div
+              <Motion.div
                 key="paused"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -238,11 +231,11 @@ export default function RecordBar({
                 <span className="text-xs font-medium text-gray-600 tabular-nums">
                   {formatTime(elapsed)}
                 </span>
-              </motion.div>
+              </Motion.div>
             )}
 
             {["stopped", "replay"].includes(state) && (
-              <motion.div
+              <Motion.div
                 key="stopped"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -281,11 +274,11 @@ export default function RecordBar({
                 >
                   <MdOutlineStickyNote2 className="text-xl" />
                 </button>
-              </motion.div>
+              </Motion.div>
             )}
           </AnimatePresence>
         </div>
-      </motion.div>
+      </Motion.div>
     </>
   );
 }
