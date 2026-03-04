@@ -1,9 +1,7 @@
 {
   "stage": "A",
-  "run_count": 7,
+  "run_count": 8,
   "todos": [
-    "(A) Move Router to main.jsx (bootstrap) and split routes into AppRoutes/Routes component",
-    "(A) Keep Provider in main.jsx; ensure ErrorBoundary wraps router tree once",
     "(A) Fix obvious frontend errors introduced by refactor; keep build passing",
     "(C) Reduce ESLint errors incrementally (unused imports / no-undef in touched files first)",
     "(Next) STT pipeline refactor (backend): map modules, add tests, then refactor small pieces"
