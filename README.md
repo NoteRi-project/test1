@@ -374,17 +374,19 @@ async def end_session()                   # 세션 종료
 - CUDA (GPU 사용 시, Whisper STT 가속화)
 ```
 
+> 참고: macOS에서는 `python` 명령이 없을 수 있어 `python3`를 사용합니다.
+
 ### 1. Backend 실행
 
 ```bash
 cd backend
 
 # 가상환경 생성
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
 # 의존성 설치
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 # 환경변수 설정 (.env 파일 생성)
 DATABASE_URL=postgresql://user:password@localhost:5433/mydb
