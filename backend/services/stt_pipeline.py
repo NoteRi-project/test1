@@ -52,49 +52,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # === 설정 클래스 ===
-class PipelineConfig:
-    """파이프라인 설정을 환경변수로 관리"""
-    
-    # 요약 관련
-    SUMMARY_INTERVAL = float(os.getenv("SUMMARY_INTERVAL", "60.0"))
-    TICK_INTERVAL = float(os.getenv("TICK_INTERVAL", "10.0"))
-    MIN_CHARS_FOR_SUMMARY = int(os.getenv("MIN_CHARS_FOR_SUMMARY", "40"))
-    
-    # 메모리 관리
-    MAX_AUDIO_BUFFER_SIZE = int(os.getenv("MAX_AUDIO_BUFFER_SIZE", str(100 * 1024 * 1024)))  # 100MB
-    MAX_PARAGRAPH_COUNT = int(os.getenv("MAX_PARAGRAPH_COUNT", "1000"))
-    AUDIO_SAVE_INTERVAL = int(os.getenv("AUDIO_SAVE_INTERVAL", "600"))  # 10분
-    
-    # 세션 타임아웃
-    SESSION_TIMEOUT = int(os.getenv("SESSION_TIMEOUT", "60"))  # 1분
-    
-    # 재시도 설정
-    MAX_RETRIES = int(os.getenv("REDIS_MAX_RETRIES", "3"))
-    RETRY_DELAY = float(os.getenv("REDIS_RETRY_DELAY", "0.5"))
-
+from backend.services.stt.pipeline_config import PipelineConfig
 
 # === 헬퍼 함수 ===
-def _short_sid() -> str:
-    """
-    작은 범위의 고유 ID 생성 (recording_sessions.id INTEGER 호환)
-    
-    Returns:
-        str: 9자리 숫자 문자열
-        
-    Note:
-        - 밀리초 타임스탬프의 하위 9자리 사용
-        - INT4 범위(2,147,483,647) 안전하게 유지
-        - 충돌 확률 극히 낮음
-    """
-    # 현재 밀리초 타임스탬프
-    timestamp_ms = int(time.time() * 1000)
-    
-    # 하위 9자리만 사용 (최대 999,999,999)
-    # 예: 1730280378123 → 280378123
-    sid = timestamp_ms % 1000000000
-    
-    return str(sid)
-
+from backend.services.stt.ids import short_sid
 
 # === 로깅 설정 ===
 logging.basicConfig(
@@ -255,7 +216,7 @@ class STTPipeline:
             if final_sid:
                 self.sid = final_sid
             else:
-                self.sid = _short_sid()
+                self.sid = short_sid()
 
             # --- 6) redis prefix 확정 (필수) ---
             self.redis_prefix = date_prefix()
