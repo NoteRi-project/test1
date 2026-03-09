@@ -8,6 +8,7 @@ import logging
 from typing import Dict
 from dotenv import load_dotenv
 import asyncio  # ← 추가: keep-alive 태스크용
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 # ============================================
@@ -67,7 +68,119 @@ logger = logging.getLogger("MainApp")
 # ============================================
 # FastAPI 앱 생성
 # ============================================
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """애플리케이션 라이프사이클(Startup/Shutdown).
+
+    - FastAPI의 deprecated `@app.on_event` 대신 lifespan 컨텍스트를 사용.
+    - Docker/프로덕션에서는 오케스트레이터가 프로세스 생명주기를 관리.
+    """
+    # ==========================================
+    # Startup
+    # ==========================================
+    logger.info("🚀 Starting application...")
+
+    # ✅ Redis 연결 (비동기)
+    try:
+        await get_redis()
+        logger.info("✅ Redis connected")
+    except Exception as e:
+        logger.error(f"❌ Redis connection failed: {e}")
+
+    # ✅ 초기 데이터 시드
+    db = SessionLocal()
+    try:
+        seed_plans(db)
+        logger.info("✅ Database seeded")
+    except Exception as e:
+        logger.error(f"❌ Database seed failed: {e}")
+    finally:
+        db.close()
+
+    # ✅ 스케줄러 시작
+    try:
+        start_scheduler()
+        logger.info("✅ Scheduler started")
+    except Exception as e:
+        logger.error(f"❌ Scheduler start failed: {e}")
+
+    # (선택) 서버 기동 직후 1회 갱신 실행
+    try:
+        await run_renew_once()
+        logger.info("✅ Initial renewal completed")
+    except Exception as e:
+        logger.warning(f"⚠️ Initial renewal failed: {e}")
+
+    # 만료된 사용자 차단 해제
+    try:
+        unban_expired_users()
+        logger.info("✅ Expired users unbanned")
+    except Exception as e:
+        logger.warning(f"⚠️ Unban failed: {e}")
+
+    logger.info("🎉 Application startup completed")
+
+    # =============================================
+    # 🧯 개발/실험용 keep-alive 태스크 (기본: 비활성)
+    # =============================================
+    # Docker/프로덕션에서는 프로세스 생명주기는 오케스트레이터가 관리해야 하므로
+    # "절대 안 꺼짐" 태스크는 기본적으로 비활성화한다.
+    if os.getenv("KEEP_ALIVE", "false").lower() in {"1", "true", "yes", "y"}:
+        async def _keep_server_alive():
+            """개발/실험용: 이벤트 루프가 조기 종료되는 환경에서만 사용"""
+            while True:
+                logger.info("keep-alive: server is alive")
+                await asyncio.sleep(30)
+
+        asyncio.create_task(_keep_server_alive())
+        logger.info("🛡️ Keep-alive task enabled (KEEP_ALIVE=true)")
+
+    # Run app
+    yield
+
+    # ==========================================
+    # Shutdown
+    # ==========================================
+    logger.info("🛑 Shutting down application...")
+
+    # ✅ 모든 활성 세션 종료
+    if active_sessions:
+        logger.info(f"⚠️ Closing {len(active_sessions)} active sessions...")
+
+        for sid, pipeline in list(active_sessions.items()):
+            try:
+                # 🔐 FK 보장을 위해 종료 직전에도 방어적으로 세션 선생성
+                try:
+                    from datetime import datetime
+                    from backend.app.util.session_repo import ensure_session_saved
+                    if getattr(pipeline, "board_id", None) is not None and getattr(pipeline, "user_id", None) is not None:
+                        ensure_session_saved(
+                            sid=int(sid),
+                            board_id=int(pipeline.board_id),
+                            user_id=int(pipeline.user_id),
+                            started_at=pipeline.session_start_ts or datetime.utcnow(),
+                        )
+                except Exception as e:
+                    logger.warning(f"[shutdown] ensure_session_saved failed sid={sid}: {e}")
+
+                await pipeline.end_session(run_diarization=False)
+                logger.info(f"✅ Session closed: {sid}")
+            except Exception as e:
+                logger.error(f"❌ Failed to close session {sid}: {e}")
+
+        active_sessions.clear()
+
+    # ✅ Redis 연결 종료
+    try:
+        await close_redis()
+        logger.info("✅ Redis connection closed")
+    except Exception as e:
+        logger.error(f"❌ Redis close failed: {e}")
+
+    logger.info("👋 Application shutdown completed")
+
+
+app = FastAPI(lifespan=lifespan)
 
 # 세션 미들웨어 (OAuth redirect 시 필요할 수 있음)
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("APP_SECRET_KEY"))
@@ -310,109 +423,4 @@ async def health_check():
         "redis": "connected" if await get_redis() else "disconnected",
     }
 
-
-# ============================================
-# 🚀 애플리케이션 라이프사이클
-# ============================================
-
-@app.on_event("startup")
-async def startup_event():
-    """애플리케이션 시작 이벤트"""
-    logger.info("🚀 Starting application...")
-    
-    # ✅ Redis 연결 (비동기)
-    try:
-        await get_redis()
-        logger.info("✅ Redis connected")
-    except Exception as e:
-        logger.error(f"❌ Redis connection failed: {e}")
-    
-    # ✅ 초기 데이터 시드
-    db = SessionLocal()
-    try:
-        seed_plans(db)
-        logger.info("✅ Database seeded")
-    except Exception as e:
-        logger.error(f"❌ Database seed failed: {e}")
-    finally:
-        db.close()
-    
-    # ✅ 스케줄러 시작
-    try:
-        start_scheduler()
-        logger.info("✅ Scheduler started")
-    except Exception as e:
-        logger.error(f"❌ Scheduler start failed: {e}")
-    
-    # (선택) 서버 기동 직후 1회 갱신 실행
-    try:
-        await run_renew_once()
-        logger.info("✅ Initial renewal completed")
-    except Exception as e:
-        logger.warning(f"⚠️ Initial renewal failed: {e}")
-    
-    # 만료된 사용자 차단 해제
-    try:
-        unban_expired_users()
-        logger.info("✅ Expired users unbanned")
-    except Exception as e:
-        logger.warning(f"⚠️ Unban failed: {e}")
-    
-    logger.info("🎉 Application startup completed")
-
-    # =============================================
-    # 🧯 개발/실험용 keep-alive 태스크 (기본: 비활성)
-    # =============================================
-    # Docker/프로덕션에서는 프로세스 생명주기는 오케스트레이터가 관리해야 하므로
-    # "절대 안 꺼짐" 태스크는 기본적으로 비활성화한다.
-    if os.getenv("KEEP_ALIVE", "false").lower() in {"1", "true", "yes", "y"}:
-        async def _keep_server_alive():
-            """개발/실험용: 이벤트 루프가 조기 종료되는 환경에서만 사용"""
-            while True:
-                logger.info("keep-alive: server is alive")
-                await asyncio.sleep(30)
-
-        asyncio.create_task(_keep_server_alive())
-        logger.info("🛡️ Keep-alive task enabled (KEEP_ALIVE=true)")
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """애플리케이션 종료 이벤트"""
-    logger.info("🛑 Shutting down application...")
-    
-    # ✅ 모든 활성 세션 종료
-    if active_sessions:
-        logger.info(f"⚠️ Closing {len(active_sessions)} active sessions...")
-        
-        for sid, pipeline in list(active_sessions.items()):
-            try:
-                # 🔐 FK 보장을 위해 종료 직전에도 방어적으로 세션 선생성
-                try:
-                    from datetime import datetime
-                    from backend.app.util.session_repo import ensure_session_saved
-                    if getattr(pipeline, "board_id", None) is not None and getattr(pipeline, "user_id", None) is not None:
-                        ensure_session_saved(
-                            sid=int(sid),
-                            board_id=int(pipeline.board_id),
-                            user_id=int(pipeline.user_id),
-                            started_at=pipeline.session_start_ts or datetime.utcnow(),
-                        )
-                except Exception as e:
-                    logger.warning(f"[shutdown] ensure_session_saved failed sid={sid}: {e}")
-
-                await pipeline.end_session(run_diarization=False)
-                logger.info(f"✅ Session closed: {sid}")
-            except Exception as e:
-                logger.error(f"❌ Failed to close session {sid}: {e}")
-        
-        active_sessions.clear()
-    
-    # ✅ Redis 연결 종료
-    try:
-        await close_redis()
-        logger.info("✅ Redis connection closed")
-    except Exception as e:
-        logger.error(f"❌ Redis close failed: {e}")
-    
-    logger.info("👋 Application shutdown completed")
+# (note) 앱 라이프사이클(startup/shutdown)은 상단의 `lifespan()`으로 이동.
