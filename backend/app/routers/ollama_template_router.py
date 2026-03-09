@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
 from backend.app.util.llm_client import ollama_generate_template
 
 router = APIRouter(prefix="/ollama", tags=["ollama-template"])
@@ -7,10 +8,12 @@ router = APIRouter(prefix="/ollama", tags=["ollama-template"])
 
 # 요청 데이터 구조 정의
 class TemplateRequest(BaseModel):
-    type: str                     # lecture / meeting / interview / blog
-    summaries: list | None = []   # 요약본
-    refinedScript: list | None = []  # 정제된 STT 스크립트
-    memo: dict | None = {}           # 사용자 메모
+    type: str  # lecture / meeting / interview / blog
+
+    # Avoid mutable defaults on Pydantic models.
+    summaries: list = Field(default_factory=list)  # 요약본
+    refinedScript: list = Field(default_factory=list)  # 정제된 STT 스크립트
+    memo: dict = Field(default_factory=dict)  # 사용자 메모
 
 
 # 실제 템플릿 생성 엔드포인트

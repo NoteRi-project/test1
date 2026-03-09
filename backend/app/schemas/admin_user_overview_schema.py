@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import datetime, date
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
 
 class AdminUserPayment(BaseModel):
     id: int
@@ -19,13 +20,15 @@ class AdminUserOverview(BaseModel):
     banned_reason: Optional[str] = None
     banned_until: Optional[datetime] = None
     is_active: bool  # 사용자 활성화 상태 (users.is_active)
-    plan_name: Optional[str] = None              # 현재(또는 가장 최근) 구독 플랜명
+    plan_name: Optional[str] = None  # 현재(또는 가장 최근) 구독 플랜명
     subscription_is_active: Optional[bool] = None  # ✅ Subscription의 is_active로 대체
     latest_payment_status: Optional[str] = None  # 가장 최근 결제 상태
-    total_paid_amount: float                     # 지금까지 총 결제액 (SUCCESS 합계)
-    next_billing_date: Optional[date] = None     # 다음 결제일(= 활성 구독 end_date 가정)
-    joined_at: datetime                          # 가입일(created_at)
-    payments: List[AdminUserPayment] = []
+    total_paid_amount: float  # 지금까지 총 결제액 (SUCCESS 합계)
+    next_billing_date: Optional[date] = None  # 다음 결제일(= 활성 구독 end_date 가정)
+    joined_at: datetime  # 가입일(created_at)
+
+    # Avoid mutable defaults on Pydantic models.
+    payments: List[AdminUserPayment] = Field(default_factory=list)
 
     model_config = {"from_attributes": True}  # Pydantic v2
     # (v1을 쓰신다면 대신 class Config: orm_mode = True 를 사용하세요)
