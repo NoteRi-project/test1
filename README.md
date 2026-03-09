@@ -375,6 +375,10 @@ async def end_session()                   # 세션 종료
 ```
 
 > 참고: macOS에서는 `python` 명령이 없을 수 있어 `python3`를 사용합니다.
+>
+> 빠른 문법 체크(서버 실행 없이):
+> - `./scripts/check_backend_compile.sh`
+> - 또는 `python3 -m compileall backend`
 
 ### 1. Backend 실행
 

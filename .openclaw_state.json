@@ -1,6 +1,5 @@
 {
   "stage": "A",
-  "stage": "A",
   "run_count": 11,
   "todos": [
     "(A) Fix obvious frontend errors introduced by refactor; keep build passing",
