@@ -476,7 +476,7 @@ class STTPipeline:
             # 이미 해당 세션의 레코드가 있으면 갱신, 없으면 생성 (테이블에 unique 제약은 없으므로 수동 upsert)
             row = (
                 db.query(model.AudioData)
-                  .filter(model.AudioData.recording_session_id == self.sid)
+                  .filter(model.AudioData.recording_session_id == int(self.sid))
                   .one_or_none()
             )
             if row:
@@ -490,7 +490,7 @@ class STTPipeline:
                     file_path=enc_path,
                     duration=dur_int,
                     language=lang,
-                    recording_session_id=self.sid,
+                    recording_session_id=int(self.sid),
                 )
                 db.add(row)
             db.commit()
@@ -1204,7 +1204,11 @@ class STTPipeline:
                 sid=int(self.sid),
                 board_id=int(self.board_id),
                 user_id=int(self.user_id),
-                started_at=self.session_start_ts or datetime.utcnow(),
+                started_at=(
+                    datetime.fromtimestamp(self.session_start_ts)
+                    if isinstance(self.session_start_ts, (int, float)) and self.session_start_ts
+                    else datetime.utcnow()
+                ),
             )
         except Exception as e:
             (getattr(self, "logger", None) or logger).warning(f"ensure_session_saved failed before audio persist: {e}")
