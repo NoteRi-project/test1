@@ -45,7 +45,7 @@ from backend.config import VAD_SAMPLE_RATE, VAD_THRESHOLD
 
 # === 서비스 ===
 from backend.services.diarization import run_diarization_for_session
-from backend.services.stt_keys import build_keys, date_prefix
+from backend.services.stt_keys import date_prefix
 
 # === 환경변수 설정 ===
 from dotenv import load_dotenv
@@ -94,11 +94,6 @@ def _short_sid() -> str:
     sid = timestamp_ms % 1000000000
     
     return str(sid)
-
-
-def _date_prefix() -> str:
-    """날짜 기반 네임스페이스 생성 (예: stt:2025-10-20)"""
-    return date_prefix()
 
 
 # === 로깅 설정 ===
@@ -263,7 +258,7 @@ class STTPipeline:
                 self.sid = _short_sid()
 
             # --- 6) redis prefix 확정 (필수) ---
-            self.redis_prefix = datetime.now().strftime("stt:%Y-%m-%d")
+            self.redis_prefix = date_prefix()
 
             # --- 7) 세션 상태 셋업 ---
             self.session_active = True
