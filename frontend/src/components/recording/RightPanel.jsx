@@ -106,7 +106,7 @@ function MemoEditor({ boardId, memoId, saveStatus, setSaveStatus }) {
     }, 800);
 
     return () => clearTimeout(saveTimeout.current);
-  }, [content, boardId, memoId]);
+  }, [content, boardId, memoId, setSaveStatus]);
 
   const handleAddImage = () => {
     const url = prompt("이미지 URL을 입력하세요:");

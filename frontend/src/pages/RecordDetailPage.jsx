@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import apiClient from "../api/apiClient";
@@ -33,7 +33,7 @@ export default function RecordDetailPage() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   // 📌 보드 데이터 로드
-  const loadBoardData = (data) => {
+  const loadBoardData = useCallback((data) => {
     setBoard(data.board);
     setMemo(data.memo);
 
@@ -56,10 +56,10 @@ export default function RecordDetailPage() {
 
     setRefinedScript(scriptData);
     setFinalSummaries(data.final_summaries || []);
-  };
+  }, []);
 
   // 📌 보드 불러오기
-  const fetchBoard = async () => {
+  const fetchBoard = useCallback(async () => {
     try {
       const guestToken = localStorage.getItem(`guest_token_board_${id}`) || null;
 
@@ -126,12 +126,12 @@ export default function RecordDetailPage() {
       console.error("회의 정보 로딩 실패:", err);
       showToast("회의 정보를 불러오지 못했습니다.");
     }
-  };
+  }, [id, user, loadBoardData, navigate, showToast]);
 
   useEffect(() => {
     if (!id) return;
     fetchBoard();
-  }, [id]);
+  }, [id, fetchBoard]);
 
   // 🔐 PIN 인증
   const handleVerifyPin = async (e) => {
