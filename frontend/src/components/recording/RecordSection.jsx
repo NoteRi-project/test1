@@ -139,7 +139,7 @@ export default function RecordSection({
                                             transition={{ duration: 0.4, ease: "easeOut" }}
                                             className="leading-relaxed break-keep text-gray-800"
                                         >
-                                            {String(bullet).replace(/^[•·\-\*\d.]\s*/, "")}
+                                            {String(bullet).replace(/^[•·*\d.-]\s*/, "")}
                                         </motion.li>
                                     ))
                                     : splitSummaryLines(item.summary).map((line, i) => (
@@ -152,7 +152,7 @@ export default function RecordSection({
                                             transition={{ duration: 0.4, ease: "easeOut" }}
                                             className="leading-relaxed break-keep text-gray-800"
                                         >
-                                            {line.replace(/^[•·\-\*\d.]\s*/, "")}
+                                            {line.replace(/^[•·*\d.-]\s*/, "")}
                                         </motion.li>
                                     ))}
                             </motion.ul>

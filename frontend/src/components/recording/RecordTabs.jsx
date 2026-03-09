@@ -1,12 +1,11 @@
 import React from "react";
-import { FaPlus } from "react-icons/fa";
+import { motion } from "framer-motion";
 
-export default function RecordTabs({ 
-  tabs, 
-  activeTab, 
+export default function RecordTabs({
+  tabs,
+  activeTab,
   setActiveTab,
-  onAddTemplate, // 템플릿 추가 핸들러
-  onRemoveTab,   // 탭 삭제 핸들러 (선택적)
+  onRemoveTab, // 탭 삭제 핸들러 (선택적)
 }) {
   return (
     <div className="relative flex mb-4 bg-gray-100 rounded-full w-fit p-1 gap-1">
