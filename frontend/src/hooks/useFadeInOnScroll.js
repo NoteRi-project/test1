@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 // export default function useFadeInOnScroll(threshold = 0.25) {
 //     const ref = useRef(null);

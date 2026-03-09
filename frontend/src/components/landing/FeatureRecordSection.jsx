@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import useFadeInOnScroll from "../../hooks/useFadeInOnScroll";
 
 export default function FeatureRecordSection() {

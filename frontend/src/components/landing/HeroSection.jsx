@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { TypeAnimation } from "react-type-animation";
 import LogoAnimation from "../common/LogoAnimation";

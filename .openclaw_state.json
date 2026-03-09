@@ -1,9 +1,9 @@
 {
   "stage": "A",
-  "run_count": 8,
+  "run_count": 9,
   "todos": [
     "(A) Fix obvious frontend errors introduced by refactor; keep build passing",
-    "(C) Reduce ESLint errors incrementally (unused imports / no-undef in touched files first)",
+    "(C) Reduce ESLint errors incrementally — removed several unused imports; continue with remaining unused vars + hook deps warnings",
     "(Next) STT pipeline refactor (backend): map modules, add tests, then refactor small pieces"
   ]
 }

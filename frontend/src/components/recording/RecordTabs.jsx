@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { FaPlus } from "react-icons/fa";
 
 export default function RecordTabs({ 
