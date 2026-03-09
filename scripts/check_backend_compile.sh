@@ -6,4 +6,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-python3 -m compileall backend
+if command -v python >/dev/null 2>&1; then
+  python -m compileall backend
+else
+  python3 -m compileall backend
+fi

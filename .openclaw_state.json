@@ -1,10 +1,12 @@
 {
   "stage": "A",
-  "run_count": 10,
+  "stage": "A",
+  "run_count": 11,
   "todos": [
     "(A) Fix obvious frontend errors introduced by refactor; keep build passing",
     "(C) Reduce ESLint errors incrementally — continue with remaining unused vars (hook deps warnings resolved)",
     "(Next) STT pipeline refactor (backend): map modules, add tests, then refactor small pieces",
-    "(Done) Fix Pydantic mutable defaults (TemplateRequest, AdminUserOverview.payments)"
+    "(Done) Fix Pydantic mutable defaults (TemplateRequest, AdminUserOverview.payments)",
+    "(Done) Add scripts/check_frontend.sh (lint+build) + make backend compile script work with python or python3"
   ]
 }
