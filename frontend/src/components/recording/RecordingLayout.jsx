@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import RecordHeader from "./RecordHeader";
 import RecordTabs from "./RecordTabs";
@@ -29,8 +30,6 @@ export default function RecordingLayout({
   sharedUsers = [],
   showMobileMemo,
   setShowMobileMemo,
-  showMobileSidebar,
-  setShowMobileSidebar,
 }) {
   const navigate = useNavigate();
 
@@ -62,7 +61,7 @@ const [showShareModal, setShowShareModal] = useState(false);
   const [dynamicTabs, setDynamicTabs] = useState([]); // [{ id, label, isDynamic: true }]
   const [dynamicTemplates, setDynamicTemplates] = useState({}); // { tabId: { content, isLoading } }
 
-  const templateServerMap = {
+  const _templateServerMap = {
     lecture: "스크립트",
     meeting: "회의기록",
     interview: "스크립트",
@@ -98,7 +97,7 @@ useEffect(() => {
 }, []);
 
 // ⭐ 세션 ID 가져오기 (임시)
-const getValidSessionId = () => {
+const _getValidSessionId = () => {
   return localStorage.getItem("session_id") || null;
 };
 
@@ -208,7 +207,7 @@ const handleSelectTemplate = async (templateKey) => {
   };
 
   // 전체 탭 목록 (고정 + 동적)
-  const allTabs = [...tabs, ...dynamicTabs];
+  const _allTabs = [...tabs, ...dynamicTabs];
 
   // 리사이즈 시 모바일 여부 업데이트
   useEffect(() => {

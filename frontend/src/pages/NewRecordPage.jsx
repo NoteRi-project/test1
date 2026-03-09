@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { AnimatePresence, motion } from "framer-motion";
 import apiClient from "../api/apiClient";
 import { useToast } from "../hooks/useToast";
 import useRecording from "../hooks/useRecording";
@@ -148,7 +147,7 @@ export default function NewRecordPage() {
           setFinalSummary(summary);
           setActiveTab("summary");
           break;
-        } catch (err) {
+        } catch {
           console.warn("전체 요약 생성 대기 중...");
         }
         await new Promise((r) => setTimeout(r, 1000));
@@ -178,7 +177,7 @@ export default function NewRecordPage() {
 };
 
   // 이탈 확인
-  const handleNavigateAway = () => {
+  const _handleNavigateAway = () => {
     if (isRecording) {
       setShowLeaveModal(true);
     } else {

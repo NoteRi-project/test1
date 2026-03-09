@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import FinalSummarySection from "./FinalSummarySection";
 import ReactMarkdown from "react-markdown";
@@ -26,7 +27,6 @@ const formatTime = (isoString) => {
 export default function RecordSection({
     activeTab,
     summaries = [],
-    liveLines,
     liveText,
     recordingState,
     allHistory = [],

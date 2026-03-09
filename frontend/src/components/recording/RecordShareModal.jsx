@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { FaLink, FaUserPlus, FaLock, FaUnlock, FaTimes, FaUsers } from "react-icons/fa";
 import { useToast } from "../../hooks/useToast";
@@ -14,12 +15,8 @@ export default function RecordShareModal({
   onClose,
   boardId = null,
   boardTitle = "",
-  summaries = [],
-  refinedScript = [],
-  memo = null,
   record = null,
   boardOwnerId,
-  barCenter, // ⭐ 추가
 }) {
   const ref = useRef(null);
   const [activeTab, setActiveTab] = useState("link");

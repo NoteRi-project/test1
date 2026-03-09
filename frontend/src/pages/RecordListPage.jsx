@@ -88,7 +88,7 @@ export default function RecordListPage() {
 
     // UI 상태
     const [sortOption, setSortOption] = useState("latest");
-    const [selectedFolder, setSelectedFolder] = useState(null);
+    const [_selectedFolder, _setSelectedFolder] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     // 페이지네이션 상태

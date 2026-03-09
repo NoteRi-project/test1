@@ -1,10 +1,6 @@
-import { useState } from "react";
-import { FaRegCalendarAlt } from "react-icons/fa";
-
 export default function RightSidePanel({
   upcomingEvents = [],
   setCalendarOpen,
-  calendarOpen,
   gptTab,
   setGptTab,
   ragQuestion,

@@ -66,6 +66,7 @@
 //     </AnimatePresence>
 //   );
 // }
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaRegCopy } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";

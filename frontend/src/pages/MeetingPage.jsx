@@ -24,7 +24,7 @@ export default function MeetingPage() {
 
     // idle | recording | paused
     const [recordingState, setRecordingState] = useState("idle");
-    const [pendingMapping, setPendingMapping] = useState(false); // 세션 매핑 대기 표시
+    const [, setPendingMapping] = useState(false); // 세션 매핑 대기 표시
 
     const wsRef = useRef(null);
     const sidRef = useRef(null); // 서버가 준 세션 SID 저장

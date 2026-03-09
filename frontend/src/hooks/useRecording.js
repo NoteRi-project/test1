@@ -23,7 +23,7 @@ export default function useRecording({ WS_URL, boardId, onData, onStartError }) 
     const streamRef = useRef(null);
     const sourceRef = useRef(null);
     const pausedRef = useRef(false);
-    const currentBoardIdRef = useRef(null); // ✅ boardId를 ref로 관리
+    const _currentBoardIdRef = useRef(null); // ✅ boardId를 ref로 관리 (reserved)
 
   // ✅ 항상 최신 boardId를 참조하도록 ref로 보관
   const boardIdRef = useRef(boardId);

@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../config";
 
 export default function LoginPage() {
   const [warming, setWarming] = useState(true);
-  const [warmupError, setWarmupError] = useState(null);
+  const [warmupError, _setWarmupError] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -16,7 +16,7 @@ export default function LoginPage() {
           credentials: "include",
           cache: "no-store",
         });
-      } catch (e) {
+      } catch {
         if (!cancelled) {
           // setWarmupError("세션 웜업에 실패했어요. 그래도 로그인은 시도할 수 있어요.");
         }

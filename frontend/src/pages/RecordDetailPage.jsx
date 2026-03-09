@@ -167,7 +167,7 @@ export default function RecordDetailPage() {
       await apiClient.delete(`/boards/${id}`);
       showToast("회의가 삭제되었습니다.");
       navigate("/");
-    } catch (err) {
+    } catch {
       showToast("회의 삭제 중 오류가 발생했습니다.");
     }
   };
@@ -182,7 +182,7 @@ export default function RecordDetailPage() {
 
       setBoard((prev) => ({ ...prev, folder }));
       showToast(`"${folder.name}" 폴더로 이동했습니다.`);
-    } catch (err) {
+    } catch {
       showToast("폴더 이동 중 오류가 발생했습니다.");
     }
   };
