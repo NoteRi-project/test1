@@ -39,7 +39,7 @@ export default function RecordHeader({
 
     window.addEventListener("mousedown", handleClickOutside);
     return () => window.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [setShowDropdown]);
 
   // -----------------------------
   // 🔥 제목 자동 저장

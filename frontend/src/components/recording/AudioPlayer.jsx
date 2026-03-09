@@ -18,6 +18,8 @@ export default function AudioPlayer({ boardId }) {
   useEffect(() => {
     if (!boardId) return;
 
+    let objectUrl = null;
+
     const loadAudio = async () => {
       try {
         setIsLoading(true);
@@ -30,8 +32,8 @@ export default function AudioPlayer({ boardId }) {
 
         // Blob URL 생성
         const blob = new Blob([response.data], { type: "audio/*" });
-        const url = URL.createObjectURL(blob);
-        setAudioUrl(url);
+        objectUrl = URL.createObjectURL(blob);
+        setAudioUrl(objectUrl);
 
         setIsLoading(false);
       } catch (err) {
@@ -45,8 +47,8 @@ export default function AudioPlayer({ boardId }) {
 
     // Cleanup
     return () => {
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
       }
     };
   }, [boardId]);

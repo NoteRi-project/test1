@@ -80,7 +80,7 @@ export default function RecordShareModal({
         showToast("❌ 노션 DB 목록을 가져오지 못했습니다.");
       }
     })();
-  }, [activeTab]);
+  }, [activeTab, databases.length, showToast]);
 
   // 노션 연결 상태
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function RecordShareModal({
         setNotionStatus({ connected: false });
       }
     })();
-  }, [activeTab]);
+  }, [activeTab, notionStatus.connected]);
 
   // 모달 외부 클릭 닫기
   useEffect(() => {
