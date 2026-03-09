@@ -62,5 +62,7 @@ This is a lightweight orientation doc for the real-time STT pipeline.
 
 ## Notes / next small steps
 
-- Add a minimal test harness for `stt_keys.py` (pure functions, easy to test).
+- ✅ `stt_keys.py` has a minimal test harness in `backend/tests/test_stt_keys.py`.
 - Consider isolating pipeline configuration (`PipelineConfig`) into a dedicated module as it grows.
+- If Redis key usage expands, add a small integration test around the Redis read/write paths in
+  `backend/app/util/redis_publisher.py` + `backend/app/tasks/redis_to_pg.py`.
