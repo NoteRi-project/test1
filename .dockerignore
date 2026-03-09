@@ -1,19 +1,18 @@
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
 *.pyd
-*.so
-.pytest_cache/
+*.pyc
+*.pytest_cache/
 .mypy_cache/
 .ruff_cache/
-.venv/
-venv/
-.env
-.env.*
+.coverage
+htmlcov/
 
-# Git
+# VCS
 .git/
+.gitignore
 
 # Node / frontend
 node_modules/
@@ -21,12 +20,18 @@ frontend/node_modules/
 frontend/dist/
 frontend/build/
 
-# OS / IDE
+# Editor/OS
 .DS_Store
 .idea/
 .vscode/
 
-# Data / logs
+# Logs
 *.log
-postgres-data/
-redis-data/
+
+# Local env
+.env
+.env.*
+
+# OpenClaw
+.openclaw_state.json
+memory/

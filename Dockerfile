@@ -15,12 +15,20 @@ RUN apt-get update \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Create a non-root user to run the app
+RUN useradd -m -u 10001 appuser
+
 # Install Python deps first for better layer caching
 COPY backend/requirements.txt /app/backend/requirements.txt
 RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
 # Copy backend source
 COPY backend /app/backend
+
+# Ensure the non-root user can read the app code
+RUN chown -R appuser:appuser /app
+
+USER appuser
 
 # Container healthcheck (requires the app to be running)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
